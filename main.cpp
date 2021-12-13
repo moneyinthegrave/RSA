@@ -69,9 +69,17 @@ unsigned int step(unsigned int a,unsigned int b,unsigned int c){
 
 int main()
 {
+	int num = 0, num2 = 0;
 	unsigned int p, q, n, fi, e, d;
 	p=Gen_P();
-	q=Gen_Q(p);
+	while ((p/=10) > 0) num++;
+	while (1){
+			q = Gen_Q(p);
+			while ((q/=10) > 0) num2++;
+			if (num == num2) {
+				break;
+			}
+	};
 	n=p*q;
 	fi=(p-1)*(q-1);
 	e=Gen_e(fi);
@@ -82,7 +90,10 @@ int main()
 	if (t==m){
 		cout<<"OK";
 	}
-	cout << "prgrm end";
+	cout << endl;
+	cout << c<<endl;
+	cout << t<<endl;
+	cout << m<<endl;
 	return 0;
 }
 
