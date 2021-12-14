@@ -32,9 +32,9 @@ unsigned int Gen_P(){
 }
 // создание числа q
 // требуются проверки
-//
-//
-//
+// проблемы:
+// 1 может вызвать сама себя даже если условие выхода истинно
+// 2 возвращется 0
 unsigned int Gen_Q(unsigned int p, int num, int num2){
 	unsigned int q;
 	do{
