@@ -1,14 +1,18 @@
 #include <iostream>
 #include <random>
+
 using namespace  std;
+// использование рандомной генерации чисел с помощью вихря мерсенна
 std::random_device rd;
 std::mt19937 mersenne(rd());
+// проверка на простое число
 unsigned int Prost(unsigned int P){
 	for( int i=2;i<=P/2;i++){
 		if(P%i==0)return 0;
 	}
 	return 1;
 }
+//
 unsigned int gcd(unsigned int a,unsigned int b){
 	(a>b)? a=a,b=b:a=b, b=a;
 	unsigned int r;
@@ -18,22 +22,38 @@ unsigned int gcd(unsigned int a,unsigned int b){
 	}
 	return a;
 }
+// создание числа р
 unsigned int Gen_P(){
 	unsigned int P;
 	do{
 		P=mersenne();
 	}while(Prost(P)==1);
-	cout << P << endl;
 	return P;
 }
-unsigned int Gen_Q(unsigned int p){
+// создание числа q
+// требуются проверки
+//
+//
+//
+unsigned int Gen_Q(unsigned int p, int num, int num2){
 	unsigned int q;
 	do{
 		q=mersenne();
-	}while(Prost(q)==1||q==p);
-	cout << q << endl;
-	return q;
+		int num2 = 0;
+		while (q /= 10) {
+			num2++;
+			std::cout << num2 << " " << q << std::endl;
+		}
+		cout << "num2" << num2<< endl;
+		if (num != num2) {
+			q = Gen_Q(p, num, num2);
+		}
+		else {
+			return q;
+		}
+	}while(Prost(q)==1||q==p||num!=num2);
 }
+// создание числа e
 unsigned int Gen_e(unsigned int fi){
 	unsigned int e;
 	do{
@@ -42,7 +62,7 @@ unsigned int Gen_e(unsigned int fi){
 	cout << e << endl;
 	return e;
 }
-
+// создание числа d
 unsigned int Gen_d(unsigned int e,unsigned  int fi){
 	unsigned int q, r, u, V; u=1,V=0; unsigned int k=fi;
 	while(e!=0){
@@ -72,17 +92,20 @@ int main()
 	int num = 0, num2 = 0;
 	unsigned int p, q, n, fi, e, d;
 	p=Gen_P();
-	while ((p/=10) > 0) num++;
-	while (1){
-			q = Gen_Q(p);
-			while ((q/=10) > 0) num2++;
-			if (num == num2) {
-				break;
-			}
-	};
+	cout << "p " << p << endl;
+	while (p /= 10) {
+		num++;
+		std::cout << num << " " << p << std::endl;
+	}
+	cout << "num" << num<< endl;
+
+	q = Gen_Q(p, num, num2);
+
+	cout << "q " << q << endl;
 	n=p*q;
 	fi=(p-1)*(q-1);
 	e=Gen_e(fi);
+	cout << "e " << e << endl;
 	d=Gen_d(e, fi);
 	unsigned int m=5;
 	unsigned int c=step(m,e,n);
@@ -96,4 +119,3 @@ int main()
 	cout << m<<endl;
 	return 0;
 }
-
