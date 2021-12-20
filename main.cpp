@@ -16,6 +16,10 @@ unsigned int Prost(unsigned int P){
 unsigned int gcd(unsigned int a,unsigned int b){
 	(a>b)? a=a,b=b:a=b, b=a;
 	unsigned int r;
+//	while(b!=0){
+//		r=a%b;
+//		a=b;b=r;
+//	}
 	while(b!=0){
 		r=a%b;
 		a=b;b=r;
@@ -27,7 +31,7 @@ unsigned int Gen_P(){
 	unsigned int P;
 	do{
 		P=mersenne();
-	}while(Prost(P)==1);
+	}while(Prost(P)!=1);
 	return P;
 }
 // создание числа q
@@ -35,23 +39,12 @@ unsigned int Gen_P(){
 // проблемы:
 // 1 может вызвать сама себя даже если условие выхода истинно
 // 2 возвращется 0
-unsigned int Gen_Q(unsigned int p, int num, int num2){
+unsigned int Gen_Q(unsigned int p){
 	unsigned int q;
 	do{
 		q=mersenne();
-		int num2 = 0;
-		while (q /= 10) {
-			num2++;
-			std::cout << num2 << " " << q << std::endl;
-		}
-		cout << "num2" << num2<< endl;
-		if (num != num2) {
-			q = Gen_Q(p, num, num2);
-		}
-		else {
-			return q;
-		}
-	}while(Prost(q)==1||q==p||num!=num2);
+	}while(Prost(q)!=1||q==p);
+	return q;
 }
 // создание числа e
 unsigned int Gen_e(unsigned int fi){
@@ -59,14 +52,12 @@ unsigned int Gen_e(unsigned int fi){
 	do{
 		e=mersenne(); //
 	}while(gcd(e, fi)!=1 && e > fi);
-	cout << e << endl;
 	return e;
 }
 // создание числа d
 unsigned int Gen_d(unsigned int e,unsigned  int fi){
-	unsigned int q, r, u, V; u=1,V=0; unsigned int k=fi;
+	unsigned int q, r, u, V; u=1,V=0; unsigned int buf, k=fi;
 	while(e!=0){
-		unsigned int buf;
 		q=fi/e;
 		r=fi%e;
 		u=u-V*q;
@@ -79,43 +70,56 @@ unsigned int Gen_d(unsigned int e,unsigned  int fi){
 	while(u>=k){u-=k;}
 	return u;
 }
-unsigned int step(unsigned int a,unsigned int b,unsigned int c){
-	unsigned int r=a;
-	for(unsigned int i=1;i<b;i++){
+ int step( unsigned long long int a, unsigned long long int b, unsigned long long int c){
+	 int r=a;
+	 cout << "run step" ;
+
+	 cout << c << "is c";
+	 cout << a << "is a";
+	 cout << b << "is b";
+	for( int i=1;i<b;i++){
 		r*=a;
 		while(r>=c){r-=c;}
-	}return r;
+		 }
+	cout << "run return step";
+	return r;
 }
 
 int main()
 {
-	int num = 0, num2 = 0;
-	unsigned int p, q, n, fi, e, d;
+	int t, c,m;
+	do {
+	unsigned int p, q, fi, e, d;
+	unsigned long  long int n;
+	cout << "run p" << endl;
 	p=Gen_P();
 	cout << "p " << p << endl;
-	while (p /= 10) {
-		num++;
-		std::cout << num << " " << p << std::endl;
-	}
-	cout << "num" << num<< endl;
-
-	q = Gen_Q(p, num, num2);
-
+	cout << "run q" << endl;
+	q = Gen_Q(p);
 	cout << "q " << q << endl;
+	cout << "run n" << endl;
+	cout << "p " << p << " q "<< q << endl;
 	n=p*q;
+	cout << n << " ist n " << endl;
+	cout << "run fi" << endl;
 	fi=(p-1)*(q-1);
+	cout << "run e" << endl;
 	e=Gen_e(fi);
 	cout << "e " << e << endl;
+	cout << "run d" << endl;
 	d=Gen_d(e, fi);
-	unsigned int m=5;
-	unsigned int c=step(m,e,n);
-	unsigned int t=step(c,d,n);
-	if (t==m){
-		cout<<"OK";
-	}
+	unsigned int max_unsigned_int_size = -1;
+	cout << max_unsigned_int_size << "max_unsigned_int_size" << endl;
+	cout << "d " << d ;
+	m=5;
+
+	c = step(m, e, n);
+	 t=step(c,d,n); }
+	while (t != m);
+
 	cout << endl;
-	cout << c<<endl;
-	cout << t<<endl;
-	cout << m<<endl;
+	cout << "run ok" << endl;
+	cout << t << "t" << m << "m";
+
 	return 0;
 }
