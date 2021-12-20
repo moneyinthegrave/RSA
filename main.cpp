@@ -1,23 +1,16 @@
-//  main.cpp
-//  RSA
-//
-//  Created by Sergiy on 06.06.17.
-
 #include <iostream>
 #include <math.h>
 #include <string.h>
 #include <string>
 #include <stdio.h>
-#include <stdlib.h>
-
 #include <random>
 
 std::random_device rd;
 std::mt19937 mersenne(rd());
 bool isPrime(long int prime);
-long int calculateE( long int t );
-long int greatestCommonDivisor( long int e, long int t );
-long int calculateD( long int e, long int t );
+long int Gen_e( long int t );
+long int gcd( long int e, long int t );
+long int Gen_d( long int e, long int t );
 long int encrypt( long int i, long int e, long int n );
 long int decrypt(long int i, long int d, long int n );
 
@@ -49,34 +42,28 @@ int main( )
 
 	std::string msg;
 
-	std::cout << "Welcome to RCA program" << std::endl << std::endl;
-
 	// Cоздание открытого и секретного ключей
 
 	// 1. Выбираются два различных случайных простых числа p и q заданного размера
 
 	do
 	{
-		std::cout << "Enter a Prime number  p :" << std::endl;
 		p = Gen_P();
 		flag = isPrime( p );
 
 		if ( flag == false )
 		{
-			std::cout << "\nWRONG INPUT (This number is not Prime. A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself)\n" << std::endl;
 		}
 	} while ( flag == false );
 
 
 	do
 	{
-		std::cout << "Enter a Prime number  q :" << std::endl;
 		q =Gen_Q();
 		flag = isPrime( q );
 
 		if ( flag == false )
 		{
-			std::cout << "\nWRONG INPUT (This number is not Prime. A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself)\n" << std::endl;
 		}
 	} while ( flag == false);
 
@@ -90,11 +77,11 @@ int main( )
 
 	// 4. Выбирается целое число e ( 1 < e < φ(n) ), взаимно простое со значением функции Эйлера (t)
 	//	  Число e называется открытой экспонентой
-	e = calculateE( t );
+	e = Gen_e( t );
 
 	// 5. Вычисляется число d, мультипликативно обратное к числу e по модулю φ(n), то есть число, удовлетворяющее сравнению:
 	//    d ⋅ e ≡ 1 (mod φ(n))
-	d = calculateD( e, t );
+	d = Gen_d( e, t );
 
 	// 6. Пара {e, n} публикуется в качестве открытого ключа RSA
 	std::cout << "\nRSA public key is (n = " << n << ", e = " << e << ")" << std::endl;
@@ -102,51 +89,6 @@ int main( )
 	// 7. Пара {d, n} играет роль закрытого ключа RSA и держится в секрете
 	std::cout << "RSA private key is (n = " << n << ", d = " << d << ")" << std::endl;
 
-
-
-	std::cout << "\nEnter Message to be encryped:" << std::endl;
-
-	// there is a newline character left in the input stream, so we use ignore()
-	std::cin.ignore();
-
-	std::getline( std::cin, msg );
-
-	std::cout << "\nThe message is: " << msg << std::endl;
-
-
-	// encryption
-
-	for (long int i = 0; i < msg.length(); i++)
-	{
-		encryptedText[i] = encrypt( msg[i], e, n);
-	}
-
-	std::cout << "\nTHE ENCRYPTED MESSAGE IS:" << std::endl;
-
-	for ( long int i = 0; i < msg.length(); i++ )
-	{
-		printf( "%c", (char)encryptedText[i] );
-	}
-
-
-	//decryption
-
-	for (long int i = 0; i < msg.length(); i++)
-	{
-		decryptedText[i] = decrypt(encryptedText[i], d, n);
-	}
-
-	std::cout << "\n\nTHE DECRYPTED MESSAGE IS:" << std::endl;
-
-	for (long int i = 0; i < msg.length(); i++)
-	{
-		printf( "%c", (char)decryptedText[i] );
-	}
-
-
-	std::cout << std::endl << std::endl;
-
-	//system("PAUSE");
 
 	return 0;
 }
@@ -168,7 +110,7 @@ bool isPrime( long int prime)
 	return true;
 }
 
-long int calculateE( long int t )
+long int Gen_e( long int t )
 {
 	// Выбирается целое число e ( 1 < e < t ) // взаимно простое со значением функции Эйлера (t)
 
@@ -176,7 +118,7 @@ long int calculateE( long int t )
 
 	for ( e = 2; e < t; e++ )
 	{
-		if (greatestCommonDivisor( e, t ) == 1 )
+		if (gcd( e, t ) == 1 )
 		{
 			return e;
 		}
@@ -185,7 +127,7 @@ long int calculateE( long int t )
 	return -1;
 }
 
-long int greatestCommonDivisor( long int e, long int t )
+long int gcd( long int e, long int t )
 {
 	while ( e > 0 )
 	{
@@ -199,7 +141,7 @@ long int greatestCommonDivisor( long int e, long int t )
 	return t;
 }
 
-long int calculateD( long int e, long int t)
+long int Gen_d( long int e, long int t)
 {
 	// Вычисляется число d, мультипликативно обратное к числу e по модулю φ(n), то есть число, удовлетворяющее сравнению:
 	//    d ⋅ e ≡ 1 (mod φ(n))
@@ -249,6 +191,5 @@ long int decrypt(long int i, long int d, long int n)
 		result = result * current;
 		result = result % n;
 	}
-//фы
 	return result + 97;
 }
