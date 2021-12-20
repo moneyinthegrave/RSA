@@ -1,125 +1,254 @@
+//  main.cpp
+//  RSA
+//
+//  Created by Sergiy on 06.06.17.
+
 #include <iostream>
+#include <math.h>
+#include <string.h>
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <random>
 
-using namespace  std;
-// использование рандомной генерации чисел с помощью вихря мерсенна
 std::random_device rd;
 std::mt19937 mersenne(rd());
-// проверка на простое число
-unsigned int Prost(unsigned int P){
-	for( int i=2;i<=P/2;i++){
-		if(P%i==0)return 0;
-	}
-	return 1;
-}
-//
-unsigned int gcd(unsigned int a,unsigned int b){
-	(a>b)? a=a,b=b:a=b, b=a;
-	unsigned int r;
-//	while(b!=0){
-//		r=a%b;
-//		a=b;b=r;
-//	}
-	while(b!=0){
-		r=a%b;
-		a=b;b=r;
-	}
-	return a;
-}
-// создание числа р
-unsigned int Gen_P(){
-	unsigned int P;
-	do{
-		P=mersenne();
-	}while(Prost(P)!=1);
+bool isPrime(long int prime);
+long int calculateE( long int t );
+long int greatestCommonDivisor( long int e, long int t );
+long int calculateD( long int e, long int t );
+long int encrypt( long int i, long int e, long int n );
+long int decrypt(long int i, long int d, long int n );
+
+long int Gen_P(){
+	long int P;
+	P=mersenne();
 	return P;
 }
-// создание числа q
-// требуются проверки
-// проблемы:
-// 1 может вызвать сама себя даже если условие выхода истинно
-// 2 возвращется 0
-unsigned int Gen_Q(unsigned int p){
-	unsigned int q;
-	do{
-		q=mersenne();
-	}while(Prost(q)!=1||q==p);
+
+long int Gen_Q(){
+	long int q;
+
+	q=mersenne();
+	;
 	return q;
 }
-// создание числа e
-unsigned int Gen_e(unsigned int fi){
-	unsigned int e;
-	do{
-		e=mersenne(); //
-	}while(gcd(e, fi)!=1 && e > fi);
-	return e;
-}
-// создание числа d
-unsigned int Gen_d(unsigned int e,unsigned  int fi){
-	unsigned int q, r, u, V; u=1,V=0; unsigned int buf, k=fi;
-	while(e!=0){
-		q=fi/e;
-		r=fi%e;
-		u=u-V*q;
-		V=V-u*q;
-		fi=e;e=r;
-		buf=u;
-		u=V;V=buf;
-	}
-	while(u<0){u+=k;}
-	while(u>=k){u-=k;}
-	return u;
-}
- int step( unsigned long long int a, unsigned long long int b, unsigned long long int c){
-	 int r=a;
-	 cout << "run step" ;
 
-	 cout << c << "is c";
-	 cout << a << "is a";
-	 cout << b << "is b";
-	for( int i=1;i<b;i++){
-		r*=a;
-		while(r>=c){r-=c;}
-		 }
-	cout << "run return step";
-	return r;
-}
-
-int main()
+int main( )
 {
-	int t, c,m;
-	do {
-	unsigned int p, q, fi, e, d;
-	unsigned long  long int n;
-	cout << "run p" << endl;
-	p=Gen_P();
-	cout << "p " << p << endl;
-	cout << "run q" << endl;
-	q = Gen_Q(p);
-	cout << "q " << q << endl;
-	cout << "run n" << endl;
-	cout << "p " << p << " q "<< q << endl;
-	n=p*q;
-	cout << n << " ist n " << endl;
-	cout << "run fi" << endl;
-	fi=(p-1)*(q-1);
-	cout << "run e" << endl;
-	e=Gen_e(fi);
-	cout << "e " << e << endl;
-	cout << "run d" << endl;
-	d=Gen_d(e, fi);
-	unsigned int max_unsigned_int_size = -1;
-	cout << max_unsigned_int_size << "max_unsigned_int_size" << endl;
-	cout << "d " << d ;
-	m=5;
+	long int p, q, n, t, e, d;
 
-	c = step(m, e, n);
-	 t=step(c,d,n); }
-	while (t != m);
+	long int encryptedText[100];
+	memset(encryptedText, 0, sizeof(encryptedText));
 
-	cout << endl;
-	cout << "run ok" << endl;
-	cout << t << "t" << m << "m";
+	long int decryptedText[100];
+	memset(decryptedText, 0, sizeof(decryptedText));
+
+	bool flag;
+
+	std::string msg;
+
+	std::cout << "Welcome to RCA program" << std::endl << std::endl;
+
+	// Cоздание открытого и секретного ключей
+
+	// 1. Выбираются два различных случайных простых числа p и q заданного размера
+
+	do
+	{
+		std::cout << "Enter a Prime number  p :" << std::endl;
+		p = Gen_P();
+		flag = isPrime( p );
+
+		if ( flag == false )
+		{
+			std::cout << "\nWRONG INPUT (This number is not Prime. A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself)\n" << std::endl;
+		}
+	} while ( flag == false );
+
+
+	do
+	{
+		std::cout << "Enter a Prime number  q :" << std::endl;
+		q =Gen_Q();
+		flag = isPrime( q );
+
+		if ( flag == false )
+		{
+			std::cout << "\nWRONG INPUT (This number is not Prime. A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself)\n" << std::endl;
+		}
+	} while ( flag == false);
+
+	// 2. Вычисляется их произведение n = p ⋅ q, которое называется модулем.
+	n = p * q;
+	std::cout << "\nResult of computing n = p*q = " << n << std::endl;
+
+	// 3. Вычисляется значение функции Эйлера от числа n: φ(n) = (p−1)⋅(q−1)
+	t = ( p - 1 ) * ( q - 1 );
+	std::cout << "Result of computing Euler's totient function:\t t = " << t << std::endl;
+
+	// 4. Выбирается целое число e ( 1 < e < φ(n) ), взаимно простое со значением функции Эйлера (t)
+	//	  Число e называется открытой экспонентой
+	e = calculateE( t );
+
+	// 5. Вычисляется число d, мультипликативно обратное к числу e по модулю φ(n), то есть число, удовлетворяющее сравнению:
+	//    d ⋅ e ≡ 1 (mod φ(n))
+	d = calculateD( e, t );
+
+	// 6. Пара {e, n} публикуется в качестве открытого ключа RSA
+	std::cout << "\nRSA public key is (n = " << n << ", e = " << e << ")" << std::endl;
+
+	// 7. Пара {d, n} играет роль закрытого ключа RSA и держится в секрете
+	std::cout << "RSA private key is (n = " << n << ", d = " << d << ")" << std::endl;
+
+
+
+	std::cout << "\nEnter Message to be encryped:" << std::endl;
+
+	// there is a newline character left in the input stream, so we use ignore()
+	std::cin.ignore();
+
+	std::getline( std::cin, msg );
+
+	std::cout << "\nThe message is: " << msg << std::endl;
+
+
+	// encryption
+
+	for (long int i = 0; i < msg.length(); i++)
+	{
+		encryptedText[i] = encrypt( msg[i], e, n);
+	}
+
+	std::cout << "\nTHE ENCRYPTED MESSAGE IS:" << std::endl;
+
+	for ( long int i = 0; i < msg.length(); i++ )
+	{
+		printf( "%c", (char)encryptedText[i] );
+	}
+
+
+	//decryption
+
+	for (long int i = 0; i < msg.length(); i++)
+	{
+		decryptedText[i] = decrypt(encryptedText[i], d, n);
+	}
+
+	std::cout << "\n\nTHE DECRYPTED MESSAGE IS:" << std::endl;
+
+	for (long int i = 0; i < msg.length(); i++)
+	{
+		printf( "%c", (char)decryptedText[i] );
+	}
+
+
+	std::cout << std::endl << std::endl;
+
+	//system("PAUSE");
 
 	return 0;
+}
+
+bool isPrime( long int prime)
+{
+	long int i, j;
+
+	j = (long int)sqrt((long double)prime);
+
+	for ( i = 2; i <= j; i++)
+	{
+		if ( prime % i == 0 )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+long int calculateE( long int t )
+{
+	// Выбирается целое число e ( 1 < e < t ) // взаимно простое со значением функции Эйлера (t)
+
+	long int e;
+
+	for ( e = 2; e < t; e++ )
+	{
+		if (greatestCommonDivisor( e, t ) == 1 )
+		{
+			return e;
+		}
+	}
+
+	return -1;
+}
+
+long int greatestCommonDivisor( long int e, long int t )
+{
+	while ( e > 0 )
+	{
+		long int myTemp;
+
+		myTemp = e;
+		e = t % e;
+		t = myTemp;
+	}
+
+	return t;
+}
+
+long int calculateD( long int e, long int t)
+{
+	// Вычисляется число d, мультипликативно обратное к числу e по модулю φ(n), то есть число, удовлетворяющее сравнению:
+	//    d ⋅ e ≡ 1 (mod φ(n))
+
+	long int d;
+	long int k = 1;
+
+	while ( 1 )
+	{
+		k = k + t;
+
+		if ( k % e == 0)
+		{
+			d = (k / e);
+			return d;
+		}
+	}
+
+}
+
+
+long int encrypt( long int i, long int e, long int n )
+{
+	long int current, result;
+
+	current = i - 97;
+	result = 1;
+
+	for ( long int j = 0; j < e; j++ )
+	{
+		result = result * current;
+		result = result % n;
+	}
+
+	return result;
+}
+
+long int decrypt(long int i, long int d, long int n)
+{
+	long int current, result;
+
+	current = i;
+	result = 1;
+
+	for ( long int j = 0; j < d; j++ )
+	{
+		result = result * current;
+		result = result % n;
+	}
+
+	return result + 97;
 }
