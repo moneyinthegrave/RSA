@@ -88,8 +88,6 @@ int main( )
 
 	// 7. Пара {d, n} играет роль закрытого ключа RSA и держится в секрете
 	std::cout << "RSA private key is (n = " << n << ", d = " << d << ")" << std::endl;
-
-
 	return 0;
 }
 
