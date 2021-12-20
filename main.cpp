@@ -249,6 +249,6 @@ long int decrypt(long int i, long int d, long int n)
 		result = result * current;
 		result = result % n;
 	}
-
+//фы
 	return result + 97;
 }
