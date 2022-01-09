@@ -1,13 +1,5 @@
-//
-// Created by user on 28.12.2021.
-//
-
-//#ifndef RSA_MD5_H
-//#define RSA_MD5_H
-//
-//#endif //RSA_MD5_H
-
 #pragma once
+
 #include <string>
 #include <array>
 #include <functional>
@@ -33,10 +25,10 @@ const std::array<unsigned int, 64> Consts = {
 		0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-const std::array<int, 64> S = { 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-                                5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-                                4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-                                6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
+const std::array<int, 64> S = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+                               5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+                               4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+                               6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 };
 
 const std::array<int, 64> X = {
@@ -46,7 +38,9 @@ const std::array<int, 64> X = {
 		0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9
 };
 
-void Round(std::function<uint32_t(uint32_t, uint32_t, uint32_t)> fun, uint32_t& A, uint32_t& B, uint32_t& C, uint32_t& D, uint32_t X, int i);
+void
+Round(std::function<uint32_t(uint32_t, uint32_t, uint32_t)> fun, uint32_t &A, uint32_t &B, uint32_t &C, uint32_t &D,
+      uint32_t X, int i);
 
 std::vector<std::string_view> BreakString(std::string_view line, int count); // Break line by count of symbols
 
@@ -54,15 +48,18 @@ inline char intToChar(int value);
 
 inline uint32_t rotate(uint32_t data, int value);
 
-std::string md5(std::string text);
+std::string md5hash(std::string text);
 
 std::string align(std::string data);
 
 std::string addLength(std::string data, std::uint64_t size);
 
 inline uint32_t FunF(uint32_t X, uint32_t Y, uint32_t Z);
+
 inline uint32_t FunG(uint32_t X, uint32_t Y, uint32_t Z);
+
 inline uint32_t FunH(uint32_t X, uint32_t Y, uint32_t Z);
+
 inline uint32_t FunI(uint32_t X, uint32_t Y, uint32_t Z);
 
 const std::array<std::function<uint32_t(uint32_t, uint32_t, uint32_t)>, 4> F = {
