@@ -115,7 +115,7 @@ string electronic_signature(string text) {
 	int i, m, mass[3], HASH;
 	RSA(mass);
 	Code = md5hash(text);
-	cout << "m(md5 в int): " << endl;
+	cout << "m(md5 to int): " << endl;
 	for (i = 0; i < Code.length(); i++) {
 		m = int(Code[i]);
 		cout << m << " ";
@@ -191,7 +191,7 @@ string Convert_to_integer(string Code) {
 
 
 int main() {
-	string text, code, decode, md5text;
+	string text, code, decode, md5text, comparison_text;
 
 	getline(cin, text);
 
@@ -202,8 +202,10 @@ int main() {
 
 	cout << "code " << code << endl;
 	text = md5hash(text);
-	decode = Decode_RSA(code);
-	cout << "decode" << endl;
-	cout << decode;
+	getline(cin, comparison_text);
+	comparison_text = md5hash(comparison_text);
+	if (text == comparison_text) {
+		cout << "ok" << endl;
+	}
 	return 0;
 }
